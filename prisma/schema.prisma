@@ -1,4 +1,13 @@
 
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
 enum StatusJogo {
   AGENDADO
   EM_ANDAMENTO
@@ -7,53 +16,51 @@ enum StatusJogo {
 }
 
 model Time {
-  id          String   @id @default(cuid())
-  nome        String
-  cidade      String
-  escudoUrl   String?
-  criadoEm    DateTime @default(now())
+  id           String   @id @default(cuid())
+  nome         String
+  cidade       String
+  escudoUrl    String?
+  criadoEm     DateTime @default(now())
   atualizadoEm DateTime @updatedAt
 
-  donoId      String
-  dono        User     @relation(fields: [donoId], references: [id], onDelete: Cascade)
+  donoId String
+  dono   User   @relation(fields: [donoId], references: [id], onDelete: Cascade)
 
-  jogadores   Jogador[]
-  jogosCasa   Jogo[]   @relation("TimeCasa")
-  jogosFora   Jogo[]   @relation("TimeFora")
+  jogadores Jogador[]
+  jogosCasa Jogo[] @relation("TimeCasa")
+  jogosFora Jogo[] @relation("TimeFora")
 
   @@index([donoId])
   @@unique([donoId, nome])
-
-  times Time[]
 }
 
 model Jogador {
-  id          String   @id @default(cuid())
-  nome        String
-  numero      Int?
-  posicao     String?
-  criadoEm    DateTime @default(now())
+  id       String   @id @default(cuid())
+  nome     String
+  numero   Int?
+  posicao  String?
+  criadoEm DateTime @default(now())
 
-  timeId      String
-  time        Time     @relation(fields: [timeId], references: [id], onDelete: Cascade)
+  timeId String
+  time   Time   @relation(fields: [timeId], references: [id], onDelete: Cascade)
 
   @@index([timeId])
 }
 
 model Jogo {
-  id          String     @id @default(cuid())
-  rodada      Int
-  data        DateTime
-  golsCasa    Int?
-  golsFora    Int?
-  status      StatusJogo @default(AGENDADO)
-  criadoEm    DateTime   @default(now())
+  id       String     @id @default(cuid())
+  rodada   Int
+  data     DateTime
+  golsCasa Int?
+  golsFora Int?
+  status   StatusJogo @default(AGENDADO)
+  criadoEm DateTime   @default(now())
 
-  casaId      String
-  casa        Time       @relation("TimeCasa", fields: [casaId], references: [id], onDelete: Cascade)
+  casaId String
+  casa   Time   @relation("TimeCasa", fields: [casaId], references: [id], onDelete: Cascade)
 
-  foraId      String
-  fora        Time       @relation("TimeFora", fields: [foraId], references: [id], onDelete: Cascade)
+  foraId String
+  fora   Time   @relation("TimeFora", fields: [foraId], references: [id], onDelete: Cascade)
 
   @@index([casaId])
   @@index([foraId])
